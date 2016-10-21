@@ -1,0 +1,16 @@
+{
+  "name": "seneca-amqp-service",
+  "version": "1.0.0",
+  "description": "A sample Seneca AMQP Service that ties in with the seneca-service-api repo",
+  "main": "index.js",
+  "repository": {
+    "url": "https://github.com/ericnograles/seneca-amqp-service.git",
+    "type": "git"
+  },
+  "author": "Eric Nograles <ENograles@352inc.com>",
+  "license": "MIT",
+  "dependencies": {
+    "seneca": "^3.2.1",
+    "seneca-amqp-transport": "^2.1.0"
+  }
+}
