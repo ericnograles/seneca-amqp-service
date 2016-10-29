@@ -9,7 +9,7 @@ function twitter(options) {
 
   this.add('init:twitter', init);
   this.add('role:twitter,version:*,cmd:*,method:*', noMatch);
-  this.add('role:twitter,version:*,cmd:tweets,method:GET', tweets);
+  this.add('role:twitter,version:v2.0,cmd:tweets,method:GET', tweets);
 
   function init(msg, respond) {
     // Note, all the code below is optional
@@ -59,7 +59,7 @@ function twitter(options) {
 // Define queues
 require('seneca')()
   .use(twitter, { logfile: './twitter.log'})
-  .use('seneca-amqp-transport')
+  .use(require('../seneca-amqp-transport'))
   .listen({
     type: 'amqp',
     pin: 'role:twitter,version:*,cmd:*,method:*',
