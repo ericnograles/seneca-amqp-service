@@ -8,8 +8,8 @@ function twitter(options) {
   var log;
 
   this.add('init:twitter', init);
-  this.add('role:twitter,cmd:*', noMatch);
-  this.add('role:twitter,cmd:tweets', tweets);
+  this.add('role:twitter,version:*,cmd:*,method:*', noMatch);
+  this.add('role:twitter,version:*,cmd:tweets,method:GET', tweets);
 
   function init(msg, respond) {
     // Note, all the code below is optional
@@ -62,6 +62,6 @@ require('seneca')()
   .use('seneca-amqp-transport')
   .listen({
     type: 'amqp',
-    pin: 'role:twitter,cmd:*',
+    pin: 'role:twitter,version:*,cmd:*,method:*',
     url: process.env.AMQP_URL || 'amqp://127.0.0.1'
   });
