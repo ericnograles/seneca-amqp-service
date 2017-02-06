@@ -1,8 +1,9 @@
+const winston = require('winston');
 const fs = require('fs');
 
 const configuration = {
-  role: 'twitter',
-  logFileName: 'twitter.log'
+  role: 'sample',
+  logFileName: 'worker.log'
 };
 
 /**
@@ -13,8 +14,8 @@ function worker(options) {
   let log;
 
   this.add(`init:${configuration.role}`, init);
-  this.add(`role:${configuration.role},cmd:*`, noMatch);
-  this.add(`role:${configuration.role},cmd:hello_world`, helloWorld);
+  this.add(`role:${configuration.role},version:*,cmd:*,method:*`, noMatch);
+  this.add(`role:${configuration.role},version:*,cmd:hello_world,method:GET`, helloWorld);
 
   function init(msg, respond) {
     // Note, all the code below is optional
@@ -30,33 +31,18 @@ function worker(options) {
     });
   }
 
-  function makeLog(fd) {
-    // TODO: Tie this into something like Winston
-    return function (entry) {
-      fs.write(fd, '\n' + new Date().toISOString() + ' ' + entry, null, 'utf8', function (err) {
-        if (err) return console.log(err);
-
-        // ensure log entry is flushed
-        fs.fsync(fd, function (err) {
-          if (err) return console.log(err);
-        })
-      });
-    }
-  }
-
-  function noMatch(payload, respond) {
+  function noMatch(msg, respond) {
     respond(null, {
       statusCode: 404,
-      original: payload,
+      original: msg,
       error: {
         message: 'Invalid service command'
       }
     });
   }
 
-  function helloWorld(payload, respond) {
-    // TODO: Your service begins here
-    log('RECEIVED: ' + payload);
+  function helloWorld(msg, respond) {
+    winston.info('RECEIVED: ' + msg);
     respond(null, {status: 'success', message: `I am the ${configuration.role} worker!`});
   }
 }
@@ -67,6 +53,6 @@ require('seneca')()
   .use('seneca-amqp-transport')
   .listen({
     type: 'amqp',
-    pin: `role:${configuration.role},cmd:*`,
+    pin: `role:${configuration.role},version:*,cmd:*,method:*`,
     url: process.env.AMQP_URL || 'amqp://127.0.0.1'
   });
