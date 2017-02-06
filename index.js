@@ -1,15 +1,20 @@
-var fs = require('fs');
+const fs = require('fs');
+
+const configuration = {
+  role: 'twitter',
+  logFileName: 'twitter.log'
+};
 
 /**
  * A sample AMQP microservice for service bus communication via RabbitMQ with the seneca-service-api
  * @param options
  */
-function twitter(options) {
-  var log;
+function worker(options) {
+  let log;
 
-  this.add('init:twitter', init);
-  this.add('role:twitter,cmd:*', noMatch);
-  this.add('role:twitter,cmd:tweets', tweets);
+  this.add(`init:${configuration.role}`, init);
+  this.add(`role:${configuration.role},cmd:*`, noMatch);
+  this.add(`role:${configuration.role},cmd:hello_world`, helloWorld);
 
   function init(msg, respond) {
     // Note, all the code below is optional
@@ -49,19 +54,19 @@ function twitter(options) {
     });
   }
 
-  function tweets(payload, respond) {
+  function helloWorld(payload, respond) {
     // TODO: Your service begins here
     log('RECEIVED: ' + payload);
-    respond(null, {status: 'success', tweets: []});
+    respond(null, {status: 'success', message: `I am the ${configuration.role} worker!`});
   }
 }
 
 // Define queues
 require('seneca')()
-  .use(twitter, { logfile: './twitter.log'})
+  .use(worker, { logfile: `./${configuration.logFileName}`})
   .use('seneca-amqp-transport')
   .listen({
     type: 'amqp',
-    pin: 'role:twitter,cmd:*',
+    pin: `role:${configuration.role},cmd:*`,
     url: process.env.AMQP_URL || 'amqp://127.0.0.1'
   });
