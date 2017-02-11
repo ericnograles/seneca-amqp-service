@@ -18,17 +18,8 @@ function worker(options) {
   this.add(`role:${configuration.role},version:*,cmd:hello_world,method:GET`, helloWorld);
 
   function init(msg, respond) {
-    // Note, all the code below is optional
-    // log to a custom file
-    fs.open(options.logfile, 'a', function (err, fd) {
-
-      // cannot open for writing, so fail
-      // this error is fatal to Seneca
-      if (err) return respond(err);
-
-      log = makeLog(fd);
-      respond();
-    });
+    winston.info(`Initializing ${configuration.role} service`);
+    // TODO: Any initialization routines go here
   }
 
   function noMatch(msg, respond) {
