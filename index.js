@@ -33,7 +33,7 @@ function worker(options) {
   }
 
   function helloWorld(msg, respond) {
-    winston.info('RECEIVED: ' + msg);
+    winston.info('RECEIVED: ' + JSON.stringify(msg));
     respond(null, {status: 'success', message: `I am the ${configuration.role} worker!`});
   }
 }
